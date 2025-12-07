@@ -1,4 +1,6 @@
 from pydantic import BaseModel, field_validator
+import json
+
 
 os_list = ["ubuntu", "centos"]
 
@@ -17,7 +19,7 @@ class Machine(BaseModel):
             raise ValueError('Name must be string')
         
     @field_validator('os')
-    def validate_name(os: str):
+    def validate_os(os: str):
         if str(os).lower() in os_list:
             return True
         else:
@@ -41,5 +43,6 @@ class Machine(BaseModel):
         if int(disk) and int(disk) > 0 and int(disk) < 10000:
             return True
         else:
-            raise ValueError('disk must be a number between 0 - 10000')
+            raise ValueError('disk must be a number between 0 - 10000') 
+            
         
