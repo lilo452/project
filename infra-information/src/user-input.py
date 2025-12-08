@@ -1,30 +1,108 @@
-from src.machine import Machine
+from machine import Machine
+from pydantic import ValidationError
+import logging
+import subprocess
 
 machines = []
+OS_LIST = ["ubuntu", "centos"]
 
-def create_vm():
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
+    handlers=[ 
+        logging.FileHandler('./logs/log.log')  
+    ]
+)
+
+
+def user_input():
     while True:
-        # print("what are your credentials?")
-        # username = input("username:")
-        # password = input("password:")
-        print("machine info:")
-        name = input("Name your vm:")
-        while not Machine.validate_name(name):
-            name = input("try again")
-        os = input("operating system (Ubuntu/CentOs):")
-        while not Machine.validate_os(os):
-            os = input("try again")
-        cpu = input("how much CPU do you want:")
-        while not Machine.validate_cpu(cpu):
-            cpu = input("try again")
-        ram = input("how much RAM do you want:")
-        while not Machine.validate_ram(ram):
-            ram = input("try again")
-        disk = input ("how much storage do you need in GB:")
-        while not Machine.validate_disk(disk):
-            disk = input("try again")
-        # Create and save the machine
-vm = Machine.create_vm(name=name, os=os, cpu=cpu, ram=ram, disk=disk)
-machines.append(vm)
-print(f"Machine created successfully: {machine}\n")
+        choice = input("Do you want to create a VM? (y=yes, n=no): ").lower()
         
+        if choice == 'n':
+            print("Exiting...")
+            break
+        elif choice != 'y':
+            print("Invalid choice. Please enter 'y' or 'n'.")
+            continue
+        logging.info("starting machine creation")
+        # name
+        name = None
+        while name is None:
+            name_input = input("enter your machines name: ")
+            try:
+                Machine(name=name_input, operating_system='ubuntu', cpu=1, ram=1, storage=1)
+                name = name_input
+            except ValidationError as e:
+                error_msg = e.errors()[0]['msg']
+                print(f"Error: {error_msg}")
+
+        # OS
+        operating_system = None
+        while operating_system is None:
+            os_input = input(f"enter your machines operating system ({', '.join(OS_LIST)}): ")
+            try:
+                Machine(name="Valid", operating_system=os_input, cpu=1, ram=1, storage=1)
+                operating_system = os_input
+            except ValidationError as e:
+                error_msg = e.errors()[0]['msg']
+                print(f"Error: {error_msg}")
+
+        # cpu
+        cpu = None
+        while cpu is None:
+            cpu_input = input("cpu: ")
+            try:
+                cpu_value = int(cpu_input)
+                Machine(name="Valid", operating_system='ubuntu', cpu=cpu_value, ram=1, storage=1)
+                cpu = cpu_value
+            except ValueError:
+                print(f"Error: Invalid cpu format. Please enter a number.")
+            except ValidationError as e:
+                error_msg = e.errors()[0]['msg']
+                print(f"Error: {error_msg}")
+
+        # ram
+        ram = None
+        while ram is None:
+            ram_input = input("ram: ")
+            try:
+                ram_value = int(ram_input)
+                Machine(name="Valid", operating_system='ubuntu', cpu=1, ram=ram_value, storage=1)
+                ram = ram_value
+            except ValueError:
+                print(f"Error: Invalid ram format. Please enter a number.")
+            except ValidationError as e:
+                error_msg = e.errors()[0]['msg']
+                print(f"Error: {error_msg}")
+
+        # storage
+        storage = None
+        while storage is None:
+            storage_input = input("storage: ")
+            try:
+                storage_value = int(storage_input)
+                Machine(name="Valid", operating_system='ubuntu', cpu=1, ram=1, storage=storage_value)
+                storage = storage_value
+            except ValueError:
+                print(f"Error: Invalid storage format. Please enter a number.")
+            except ValidationError as e:
+                error_msg = e.errors()[0]['msg']
+                print(f"Error: {error_msg}")
+
+        vm = Machine.create_machine(name=name, operating_system=operating_system, cpu=cpu, ram=ram, storage=storage)
+        print(f"Machine created successfully: {vm}\n")
+        logging.info("machine created successfully")
+
+def install_nginx():
+    try:
+        result = subprocess.run(["wsl","script/install_nginx.sh"], check=True, capture_output=True)
+        print(result.stdout)
+        logging.info("servcie installed successfully")
+    except subprocess.CalledProcessError as err:
+        print("script failed with error:", err.stderr)
+        logging.error("failed to install nginx", err)
+
+if __name__ == "__main__":
+    install_nginx()
+    user_input()      
