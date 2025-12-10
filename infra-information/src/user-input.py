@@ -103,6 +103,6 @@ def install_nginx():
         print("script failed with error:", err.stderr)
         logging.error("failed to install nginx: %s", err)
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     install_nginx()
     user_input()
