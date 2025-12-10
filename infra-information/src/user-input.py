@@ -96,13 +96,13 @@ def user_input():
 
 def install_nginx():
     try:
-        result = subprocess.run(["wsl","script/install_nginx.sh"], check=True, capture_output=True)
-        print(result.stdout)
+        result = subprocess.run(["bash","scripts/install_ngnix.sh"], check=True, capture_output=True)
+        print(result.stdout.decode())
         logging.info("servcie installed successfully")
     except subprocess.CalledProcessError as err:
         print("script failed with error:", err.stderr)
-        logging.error("failed to install nginx", err)
+        logging.error("failed to install nginx: %s", err)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     install_nginx()
-    user_input()      
+    user_input()
