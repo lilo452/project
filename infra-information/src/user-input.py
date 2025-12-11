@@ -113,7 +113,7 @@ def user_input():
 
         vm = Machine.create_machine(name=name, operating_system=operating_system, cpu=cpu, ram=ram, storage=storage)
         print(f"Machine created successfully: {vm}\n")
-        logging.info(f"machine created successfully: {Machine.toDict()}")
+        logging.info(f"machine created successfully: {vm}\n")
 
 def install_nginx():
     try:
@@ -124,5 +124,8 @@ def install_nginx():
         print("script failed with error:", err.stderr)
         logging.error("failed to install nginx: %s", err)
 
-    # install_nginx()
-user_input()
+def main():
+    user_input()
+    install_nginx()
+
+main()

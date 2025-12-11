@@ -26,5 +26,12 @@
     "cpu": 8,
     "ram": 32,
     "storage": 256
+  },
+  {
+    "name": "lihi-final",
+    "operating_system": "ubuntu",
+    "cpu": 65,
+    "ram": 65,
+    "storage": 65
   }
 ]
