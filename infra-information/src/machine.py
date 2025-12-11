@@ -60,7 +60,16 @@ class Machine(BaseModel):
             return storage
         else:
             raise ValueError('disk must be a number between 0 - 10000')
-
+    
+    def toDict(self):
+        return {
+        "name" : self.name,
+        "OS" : self.operating_system,
+        "CPU" : self.cpu,
+        "RAM" : self.ram,
+        "storage" : self.storage,
+        }
+    
     @classmethod    
     def create_machine(cls, name: str, operating_system: str, cpu: int, ram: int, storage: int, filename: str = "configs/machines.json"):
             """Create a machine instance and save it to a JSON file"""
